@@ -27,17 +27,24 @@ class BookService {
 
   Future<void> addBook(BookModel book) async {
     final shared = await SharedPreferences.getInstance();
-    final List<BookModel> listOfBooks = [];
+    final books = await getAllBooks();
+    books.add(book);
+    final String listOfBooksToSave = json.encode(books);
+    await shared.setString(keyListBooks, listOfBooksToSave);
+  }
 
+  Future<List<BookModel>> getAllBooks() async {
+    final shared = await SharedPreferences.getInstance();
     final listOfBooksJson = shared.getString(keyListBooks);
     if (listOfBooksJson != null) {
       final List<dynamic> decodedJson = json.decode(listOfBooksJson) as List<dynamic>;
-      final List<BookModel> listOfBooksFromLocalData = decodedJson.map((book) => BookModel.fromJson(book)).toList();
-      listOfBooks.addAll(listOfBooksFromLocalData);
+      return decodedJson.map((book) => BookModel.fromJson(book)).toList();
     }
+    return [];
+  }
 
-    listOfBooks.add(book);
-    final String listOfBooksToSave = json.encode(listOfBooks);
-    await shared.setString(keyListBooks, listOfBooksToSave);
+  Future<BookModel?> getBookById(String id) async {
+    final books = await getAllBooks();
+    return books.firstWhere((book) => book.id == id);
   }
 }

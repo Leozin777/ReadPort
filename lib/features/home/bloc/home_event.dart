@@ -1,3 +1,3 @@
 abstract class HomeEvent {}
 
-class GetData extends HomeEvent{}
+class GetBooks extends HomeEvent{}
