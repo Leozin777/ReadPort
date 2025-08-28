@@ -25,4 +25,15 @@ class BookModel {
       isFavorite: json['isFavorite'] as bool? ?? false,
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'title': title,
+      'path': path,
+      'extension': extension,
+      'lastPage': lastPage,
+      'isFavorite': isFavorite,
+    };
+  }
 }

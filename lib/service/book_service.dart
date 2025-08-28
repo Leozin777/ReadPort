@@ -7,29 +7,39 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class BookService {
   Future<BookModel?> pickBook() async {
-    final result = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: ['pdf', 'txt', 'epub'],
-    );
+    try {
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['pdf', 'txt', 'epub'],
+      );
 
-    if (result != null && result.files.isNotEmpty) {
-      final filePath = result.files.single.path!;
-      final fileName = result.files.single.name;
-      final fileExtension = result.files.single.extension;
+      if (result != null && result.files.isNotEmpty) {
+        final filePath = result.files.single.path!;
+        final fileName = result.files.single.name;
+        final fileExtension = result.files.single.extension;
 
-      final uuid = Uuid();
-      final bookId = uuid.v4();
-      return BookModel(id: bookId, title: fileName, path: filePath, extension: fileExtension ?? "");
+        final uuid = Uuid();
+        final bookId = uuid.v4();
+        return BookModel(id: bookId, title: fileName, path: filePath, extension: fileExtension ?? "");
+      }
+      return null;
+    } catch (e) {
+      throw Exception(e.toString());
     }
-    return null;
   }
 
-  Future<void> addBook(BookModel book) async {
-    final shared = await SharedPreferences.getInstance();
-    final books = await getAllBooks();
-    books.add(book);
-    final String listOfBooksToSave = json.encode(books);
-    await shared.setString(keyListBooks, listOfBooksToSave);
+  Future<void> addBook() async {
+    try {
+      final book = await pickBook();
+      if (book == null) throw Exception("Erro ao adicionar livro");
+      final shared = await SharedPreferences.getInstance();
+      final books = await getAllBooks();
+      books.add(book);
+      final String listOfBooksToSave = json.encode(books.map((book) => book.toJson()).toList());
+      await shared.setString(keyListBooks, listOfBooksToSave);
+    } on Exception catch (e) {
+      rethrow;
+    }
   }
 
   Future<List<BookModel>> getAllBooks() async {
@@ -43,7 +53,11 @@ class BookService {
   }
 
   Future<BookModel?> getBookById(String id) async {
-    final books = await getAllBooks();
-    return books.firstWhere((book) => book.id == id);
+    try {
+      final books = await getAllBooks();
+      return books.firstWhere((book) => book.id == id);
+    } catch (e) {
+      throw Exception("Arquivo não encontrado");
+    }
   }
 }

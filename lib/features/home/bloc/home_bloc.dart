@@ -12,5 +12,14 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       final books = await bookService.getAllBooks();
       emit(ShowBooks(books: books));
     });
+
+    on<AddBook>((event, emit) async {
+      try {
+        await bookService.addBook();
+        add(GetBooks());
+      } on Exception catch (e) {
+        print("erro");
+      }
+    });
   }
 }

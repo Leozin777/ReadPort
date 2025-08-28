@@ -29,7 +29,36 @@ class _HomeScreenState extends State<HomeScreen> {
               return Center(child: Text("Aperte no + para adicionar um documento"));
             }
             return ListView.separated(
-              itemBuilder: (_, index) => Text(state.books[index].title),
+              itemBuilder: (_, index) => GestureDetector(
+                onTap: () {
+                  print("");
+                },
+                child: Padding(
+                  padding: EdgeInsets.all(10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    spacing: 5,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            state.books[index].title,
+                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                          ),
+                          state.books[index].lastPage > 0
+                              ? Text(
+                                  state.books[index].lastPage.toString(),
+                                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                                )
+                              : Spacer(),
+                        ],
+                      ),
+                      Divider()
+                    ],
+                  ),
+                ),
+              ),
               itemCount: state.books.length,
               separatorBuilder: (_, i) => SizedBox(
                 height: 10,
@@ -40,7 +69,7 @@ class _HomeScreenState extends State<HomeScreen> {
         }),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () => BlocProvider.of<HomeBloc>(context).add(AddBook()),
         child: Icon(Icons.add),
       ),
     );
