@@ -1,16 +1,18 @@
 import 'dart:convert';
 import 'package:read_port/core/constants/constants.dart';
-import 'package:read_port/models/book_model.dart';
+import 'package:read_port/core/domain/enums/extensions.dart';
 import 'package:uuid/uuid.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../core/domain/models/book_model.dart';
 
 class BookService {
   Future<BookModel?> pickBook() async {
     try {
       final result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
-        allowedExtensions: ['pdf', 'txt', 'epub'],
+        allowedExtensions: ['pdf', 'epub'],
       );
 
       if (result != null && result.files.isNotEmpty) {
@@ -20,7 +22,7 @@ class BookService {
 
         final uuid = Uuid();
         final bookId = uuid.v4();
-        return BookModel(id: bookId, title: fileName, path: filePath, extension: fileExtension ?? "");
+        return BookModel(id: bookId, title: fileName, path: filePath, extension: Extensions.values.byName(fileExtension ?? "pdf"));
       }
       return null;
     } catch (e) {
@@ -28,12 +30,19 @@ class BookService {
     }
   }
 
-  Future<void> addBook() async {
+  Future<void> addBook([BookModel? bookP]) async {
     try {
-      final book = await pickBook();
+      late BookModel? book;
+      if (bookP == null) {
+        book = await pickBook();
+      } else {
+        book = bookP;
+      }
+
       if (book == null) throw Exception("Erro ao adicionar livro");
       final shared = await SharedPreferences.getInstance();
       final books = await getAllBooks();
+      books.removeWhere((b) => b.id == book?.id);
       books.add(book);
       final String listOfBooksToSave = json.encode(books.map((book) => book.toJson()).toList());
       await shared.setString(keyListBooks, listOfBooksToSave);
@@ -59,5 +68,13 @@ class BookService {
     } catch (e) {
       throw Exception("Arquivo não encontrado");
     }
+  }
+
+  Future<void> setLastPosition({required String id, required String lastPosition}) async {
+    try {
+      final book = await getBookById(id);
+      book?.readPosition = lastPosition;
+      addBook(book);
+    } catch (e) {}
   }
 }

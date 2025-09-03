@@ -1,0 +1,1 @@
+enum Extensions { pdf, epub }

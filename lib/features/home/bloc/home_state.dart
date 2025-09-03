@@ -1,4 +1,4 @@
-import 'package:read_port/models/book_model.dart';
+import 'package:read_port/core/domain/models/book_model.dart';
 
 abstract class HomeState {}
 
