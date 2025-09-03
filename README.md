@@ -1,16 +1,15 @@
-# read_port
+# 📚 Read Port
 
-A new Flutter project.
+Read Port é um aplicativo de leitura de EPUB e PDF desenvolvido em Flutter, com foco em simplicidade e organização.
 
-## Getting Started
+## ✨ Funcionalidades
 
-This project is a starting point for a Flutter application.
+- Upload de arquivos locais (epub e pdf)
+- Leitura com salvamento automático da última posição
+- Gerenciamento de estado com BLoC
+- Arquitetura limpa com injeção de dependência via get_it
 
-A few resources to get you started if this is your first Flutter project:
+## 🔧 Principais pacotes
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+``flutter_bloc``, ``shared_preferences``, ``epub_view``, ``flutter_pdfview``, ``file_picker``, ``uuid`` e ``get_it``
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
